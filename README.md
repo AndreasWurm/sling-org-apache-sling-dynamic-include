@@ -39,6 +39,7 @@ Filter is delivered as a standard OSGi bundle. SDI is configured via the configu
 * **Include type** - type of include tag (Apache SSI, ESI or Javascript)
 * **Add comment** - adds debug comment: `<!-- SDI include (path: %s, resourceType: %s) -->` to every replaced component
 * **Filter selector** - selector used to get actual content
+* **Extension** - extension to append to virtual resources to make caching in Dispatcher possible (see [caching of synthetic resources](#caching-of-synthetic-resources)
 * **Component TTL** - time to live in seconds, set for rendered component (require Dispatcher 4.1.11+)
 * **Required header** - SDI will be enabled only if the configured header is present in the request. By default it's `Server-Agent=Communique-Dispatcher` header, added by the AEM dispatcher. You may enter just the header name only or the name and the value split with `=`.
 * **Ignore URL params** - SDI normally skips all requests containing any GET parameters. This option allows to set a list of parameters that should be ignored in the test. See the [Ignoring URL parameters](https://docs.adobe.com/docs/en/dispatcher/disp-config.html#Ignoring%20URL%20Parameters) section in the dispatcher documentation.
@@ -143,6 +144,15 @@ If filter got such request, it'll try to emulate `<sling:include>` JSP tag and i
     /content/geometrixx/en/jcr:content/userinfo.nocache.html
 
 Selector is necessary, because otherwise filter would again replace component with a SSI tag.
+
+
+## Caching of synthetic resources
+
+Normally synthetic resource URLs can't be cached by the dispatcher because they end with the resourceType and have no extension. Setting an extension in the configuration , for example `fake`, results in cachable URLs:
+
+    /content/geometrixx/en/jcr:content/userinfo.sdi.html/foundation/components/userinfo.fake
+
+Those can then be flushed via invalidation, or used in combination with TTL.
 
 # External resources
 
